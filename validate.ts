@@ -1,7 +1,11 @@
 export type Validator = (a: unknown) => true | string;
-export type RuleSegment = Rule<unknown> | Ruleset<unknown> | ArrayRule<unknown> | {
-  [key: string]: RuleSegment;
-};
+export type RuleSegment =
+  | Rule<unknown>
+  | Ruleset<unknown>
+  | ArrayRule<unknown>
+  | {
+    [key: string]: RuleSegment;
+  };
 
 export class ValidationError extends Error {
   map: unknown;
@@ -56,7 +60,9 @@ export class ArrayRule<T> {
   }
 
   validate(v: unknown) {
-    if (!Array.isArray(v)) throw new Error("is not an array");
+    if (!Array.isArray(v)) {
+      throw new ValidationError("is not an array", { map: "is not an array" });
+    }
     let errorFound = false as boolean;
     const results = v.map((entry) => {
       try {
@@ -87,7 +93,7 @@ export class ObjectRule<T> {
   }
 
   validate(v: unknown) {
-    if (typeof v !== "object") throw new Error("is not an object");
+    if (typeof v !== "object") throw new ValidationError("is not an object", { map: "is not an object" });
     const errors = Object.entries(this.ruleSegment)
       .reduce((_errors: Array<unknown>, [key, el]) => {
         try {
@@ -103,7 +109,9 @@ export class ObjectRule<T> {
         }
       }, []) as Array<[string, unknown]>;
     if (errors.length > 0) {
-      throw new ValidationError(errors.toString(), { map: Object.fromEntries(errors) });
+      throw new ValidationError(errors.toString(), {
+        map: Object.fromEntries(errors),
+      });
     } else {
       return v as T;
     }

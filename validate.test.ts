@@ -170,6 +170,18 @@ const testObjectInvalid = {
   },
 };
 
+const testObjectObjectMissing = {
+  id: "lol",
+};
+
+
+const testObjectArrayMissing = {
+  user: {
+    name: "lol",
+    email: "lol@foo.bar",
+  },
+};
+
 Deno.test("test All valid", () => {
   assertEquals(
     validate(testObjectValid, testRule),
@@ -177,7 +189,7 @@ Deno.test("test All valid", () => {
   );
 });
 
-Deno.test("test All valid", () => {
+Deno.test("test All invalid", () => {
   assertEquals(
     (() => {
       try {
@@ -198,6 +210,40 @@ Deno.test("test All valid", () => {
           ],
         ],
         email: "no valid email",
+      },
+    },
+  );
+});
+
+Deno.test("test All object missing", () => {
+  assertEquals(
+    (() => {
+      try {
+        validate(testObjectObjectMissing, testRule);
+      } catch (e) {
+        return e.map;
+      }
+    })(),
+    {
+      id: "not a number",
+      user: "is not an object",
+    },
+  );
+});
+
+Deno.test("test All object missing", () => {
+  assertEquals(
+    (() => {
+      try {
+        validate(testObjectArrayMissing, testRule);
+      } catch (e) {
+        return e.map;
+      }
+    })(),
+    {
+      id: "not a number",
+      user: {
+        tags: "is not an array"
       },
     },
   );
