@@ -93,7 +93,11 @@ export class ObjectRule<T> {
   }
 
   validate(v: unknown) {
-    if (typeof v !== "object") throw new ValidationError("is not an object", { map: "is not an object" });
+    if (typeof v !== "object") {
+      throw new ValidationError("is not an object", {
+        map: "is not an object",
+      });
+    }
     const errors = Object.entries(this.ruleSegment)
       .reduce((_errors: Array<unknown>, [key, el]) => {
         try {
@@ -118,19 +122,20 @@ export class ObjectRule<T> {
   }
 }
 
-export const validate = (
+export const validate = <T>(
   obj: unknown,
   ruleSegment: RuleSegment,
-) => {
+): T => {
   if (
     ruleSegment instanceof Rule ||
     ruleSegment instanceof Ruleset ||
-    ruleSegment instanceof ArrayRule
+    ruleSegment instanceof ArrayRule ||
+    ruleSegment instanceof ObjectRule
   ) {
-    return ruleSegment.validate(obj);
+    return ruleSegment.validate(obj) as T;
   } else if (typeof ruleSegment === "object") {
-    return new ObjectRule(ruleSegment).validate(obj);
+    return new ObjectRule<T>(ruleSegment).validate(obj) as T;
   } else {
-    throw new Error("unexpected rule segment");
+    throw new Error("unexpected rule segment") as T;
   }
 };

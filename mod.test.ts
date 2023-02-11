@@ -1,4 +1,4 @@
-import { ArrayRule, ObjectRule, Rule, Ruleset, validate } from "./validate.ts";
+import { ArrayRule, ObjectRule, Rule, Ruleset, validate } from "./mod.ts";
 import { assertEquals } from "https://deno.land/std@0.177.0/testing/asserts.ts";
 
 // test Rule
@@ -146,7 +146,7 @@ const testRule = {
   },
 };
 
-const testObjectValid = {
+const testValid = {
   id: 123,
   user: {
     name: "lol",
@@ -158,7 +158,7 @@ const testObjectValid = {
   },
 };
 
-const testObjectInvalid = {
+const testInvalid = {
   id: "lol",
   user: {
     name: 123,
@@ -170,12 +170,11 @@ const testObjectInvalid = {
   },
 };
 
-const testObjectObjectMissing = {
+const testObjectMissing = {
   id: "lol",
 };
 
-
-const testObjectArrayMissing = {
+const testArrayMissing = {
   user: {
     name: "lol",
     email: "lol@foo.bar",
@@ -184,8 +183,8 @@ const testObjectArrayMissing = {
 
 Deno.test("test All valid", () => {
   assertEquals(
-    validate(testObjectValid, testRule),
-    testObjectValid,
+    validate(testValid, testRule),
+    testValid,
   );
 });
 
@@ -193,7 +192,7 @@ Deno.test("test All invalid", () => {
   assertEquals(
     (() => {
       try {
-        validate(testObjectInvalid, testRule);
+        validate(testInvalid, testRule);
       } catch (e) {
         return e.map;
       }
@@ -219,7 +218,7 @@ Deno.test("test All object missing", () => {
   assertEquals(
     (() => {
       try {
-        validate(testObjectObjectMissing, testRule);
+        validate(testObjectMissing, testRule);
       } catch (e) {
         return e.map;
       }
@@ -231,11 +230,11 @@ Deno.test("test All object missing", () => {
   );
 });
 
-Deno.test("test All object missing", () => {
+Deno.test("test All array missing", () => {
   assertEquals(
     (() => {
       try {
-        validate(testObjectArrayMissing, testRule);
+        validate(testArrayMissing, testRule);
       } catch (e) {
         return e.map;
       }
@@ -243,7 +242,7 @@ Deno.test("test All object missing", () => {
     {
       id: "not a number",
       user: {
-        tags: "is not an array"
+        tags: "is not an array",
       },
     },
   );
